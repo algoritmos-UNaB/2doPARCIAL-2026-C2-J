@@ -1,0 +1,109 @@
+from dataclasses import dataclass, field
+
+
+@dataclass
+class Ingrediente:
+    nombre: str
+    cantidad: float
+    unidad: str = "g"
+
+
+@dataclass
+class Receta:
+    nombre: str
+    dia_asignado: str
+    duracion_minutos: int
+    dificultad: str
+    salas_necesarias: list[str] = field(default_factory=list)
+    ingredientes: list[Ingrediente] = field(default_factory=list)
+    subrecetas: list["Receta"] = field(default_factory=list)
+
+    def total_gramos(self) -> float:
+        propios = sum(ing.cantidad for ing in self.ingredientes if ing.unidad == "g")
+        sub = sum(subreceta.total_gramos() for subreceta in self.subrecetas)
+        return propios + sub
+
+    def mostrar_resumen(self, nivel: int = 0) -> None:
+        sangria = "  " * nivel
+        etiqueta = "Receta Principal" if nivel == 0 else "Subreceta"
+        print(f"{sangria}[{etiqueta}] {self.dia_asignado} -> {self.nombre}")
+        print(f"{sangria}  Duración: {self.duracion_minutos} minutos | Dificultad: {self.dificultad}")
+        print(f"{sangria}  Salas necesarias: {', '.join(self.salas_necesarias)}")
+        print(f"{sangria}  Ingredientes:")
+        for ing in self.ingredientes:
+            print(f"{sangria}    - {ing.nombre}: {ing.cantidad} {ing.unidad}")
+        print(f"{sangria}  Peso total en gramos (incluyendo subrecetas): {self.total_gramos()} g")
+
+        for sub in self.subrecetas:
+            print()
+            sub.mostrar_resumen(nivel + 1)
+
+
+def cargar_recetario() -> Receta:
+    # 1. Carga de menús, tiempos (min) y dificultad ("Baja")
+    menus = {
+        "Chimichurri": {"duracion": 15, "dificultad": "Baja"},
+        "Salsa criolla": {"duracion": 20, "dificultad": "Baja"},
+        "Sofrito": {"duracion": 25, "dificultad": "Baja"},
+    }
+
+    # 2. Subreceta: Martes de Salsa criolla (en gramos)
+    martes_salsa_criolla = Receta(
+        nombre="Salsa criolla",
+        dia_asignado="Martes",
+        duracion_minutos=menus["Salsa criolla"]["duracion"],
+        dificultad=menus["Salsa criolla"]["dificultad"],
+        salas_necesarias=["Sala de Preparación en Frío", "Cámara de Conservación"],
+        ingredientes=[
+            Ingrediente("Cebolla morada", 150.0, "g"),
+            Ingrediente("Morrón rojo", 80.0, "g"),
+            Ingrediente("Morrón verde", 60.0, "g"),
+            Ingrediente("Aceite de girasol", 50.0, "g"),
+            Ingrediente("Vinagre de alcohol", 30.0, "g"),
+            Ingrediente("Sal fina", 5.0, "g"),
+        ],
+    )
+
+    # 3. Subreceta: Jueves de Sofrito (en gramos)
+    jueves_sofrito = Receta(
+        nombre="Sofrito",
+        dia_asignado="Jueves",
+        duracion_minutos=menus["Sofrito"]["duracion"],
+        dificultad=menus["Sofrito"]["dificultad"],
+        salas_necesarias=["Sala de Cocción Caliente", "Área de Corte y Lavado"],
+        ingredientes=[
+            Ingrediente("Cebolla blanca", 180.0, "g"),
+            Ingrediente("Tomate perita triturado", 200.0, "g"),
+            Ingrediente("Ajo picado", 25.0, "g"),
+            Ingrediente("Aceite de oliva", 45.0, "g"),
+            Ingrediente("Pimentón dulce", 10.0, "g"),
+        ],
+    )
+
+    # 4. Receta principal: Lunes de Chimichurri con sus subrecetas
+    lunes_chimichurri = Receta(
+        nombre="Chimichurri",
+        dia_asignado="Lunes",
+        duracion_minutos=menus["Chimichurri"]["duracion"],
+        dificultad=menus["Chimichurri"]["dificultad"],
+        salas_necesarias=["Sala de Condimentos y Secos", "Sala de Preparación en Frío"],
+        ingredientes=[
+            Ingrediente("Perejil fresco picado", 120.0, "g"),
+            Ingrediente("Orégano seco", 20.0, "g"),
+            Ingrediente("Ajo triturado", 35.0, "g"),
+            Ingrediente("Ají molido", 10.0, "g"),
+            Ingrediente("Aceite vegetal", 150.0, "g"),
+            Ingrediente("Vinagre de vino", 60.0, "g"),
+        ],
+        subrecetas=[
+            martes_salsa_criolla,
+            jueves_sofrito,
+        ],
+    )
+
+    return lunes_chimichurri
+
+
+if __name__ == "__main__":
+    recetario_principal = cargar_recetario()
+    recetario_principal.mostrar_resumen()
