@@ -1,0 +1,42 @@
+# Parcial - ejercicio 3 - versiones
+
+def versiones_de(biblioteca, versiones, cancion_id):
+    """Lista de (titulo, tipo) de todo lo derivado, sin incluir la canción original.
+       Pre: versiones es una lista de tuplas (cancion_id, version_de_id, tipo).
+       Levanta CancionNoEncontradaError si cancion_id no está en la biblioteca."""
+
+    #si la canción no existe, obtener levanta la excepción.
+    biblioteca.obtener(cancion_id)
+
+    #versiones directas de esta canción: (id de la versión, tipo)
+    directas = []
+    for v in versiones:
+        if v[1] == cancion_id:
+            directas.append((v[0], v[2]))
+
+    #caso base: nadie es versión de esta canción.
+    if len(directas) == 0:
+        return []
+
+    #de menor a mayor cancion_id.
+    directas.sort()
+
+    resultado = []
+    for version_id, tipo in directas:
+        #primero la versión directa...
+        resultado.append((biblioteca.obtener(version_id).titulo, tipo))
+        #...después lo que cuelga de ella (llamada recursiva).
+        resultado = resultado + versiones_de(biblioteca, versiones, version_id)
+    return resultado
+
+
+#teoría 3:
+#caso base: nadie es versión de cancion_id -> devuelve [].
+#Llamadas para versiones_de(..., 12):
+#versiones_de(12): la única versión directa es la 13 (live).
+#agrega ("Ji Ji Ji", "live") y llama a versiones_de(13)
+#versiones_de(13): la única versión directa es la 70 (remix).
+#agrega ("Ji Ji Ji (Remix)", "remix") y llama a versiones_de(70)
+#versiones_de(70): nadie es versión de la 70 -> caso base, devuelve []
+#versiones_de(13) vuelve con [("Ji Ji Ji (Remix)", "remix")]
+#versiones_de(12) vuelve con [("Ji Ji Ji", "live"), ("Ji Ji Ji (Remix)", "remix")]

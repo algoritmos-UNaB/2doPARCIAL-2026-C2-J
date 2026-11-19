@@ -1,0 +1,58 @@
+# Parcial - ejercicio 5 - pila e historial de reproducción
+
+from ejercicio_04 import ListaEnlazada
+
+
+#excepción propia de este ejercicio
+class PilaVaciaError(Exception):
+    pass
+
+
+class Pila():
+    """Pila sobre ListaEnlazada. El tope es el primer nodo."""
+
+    def __init__(self):
+        self.items = ListaEnlazada()
+
+    def apilar(self, dato):
+        self.items.insertar_al_inicio(dato)
+
+    def desapilar(self):
+        """Devuelve el tope y lo saca. Si está vacía levanta PilaVaciaError."""
+        if self.items.esta_vacia():
+            raise PilaVaciaError("No se puede desapilar: la pila está vacía.")
+        return self.items.quitar_primero()
+
+    def ver_tope(self):
+        """Devuelve el tope y lo deja en la pila.
+           Si está vacía levanta PilaVaciaError."""
+        dato = self.desapilar()   # si está vacía, levanta PilaVaciaError
+        self.apilar(dato)
+        return dato
+
+    def esta_vacia(self):
+        return self.items.esta_vacia()
+
+
+class HistorialReproduccion():
+    """Usa una Pila de canciones."""
+
+    def __init__(self):
+        self.pila = Pila()
+
+    def registrar(self, cancion):
+        """Apila lo que acaba de sonar."""
+        self.pila.apilar(cancion)
+
+    def anterior(self):
+        """Desapila y devuelve la canción a la que se vuelve."""
+        return self.pila.desapilar()
+
+    def ultima(self):
+        """Devuelve la última canción reproducida, sin sacarla."""
+        return self.pila.ver_tope()
+
+
+#teoría 5:
+# El primer anterior() devuelve "De Música Ligera", porque es la última que se registró y la pila es 
+#último en entrar, primero en salir: lo último que se apiló es lo primero que sale.
