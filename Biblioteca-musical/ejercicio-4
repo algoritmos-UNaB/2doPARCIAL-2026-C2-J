@@ -1,0 +1,122 @@
+# Parcial - ejercicio 4 - playlist sobre lista enlazada
+
+from ejercicio_02 import CancionNoEncontradaError
+
+class Nodo():
+    def __init__(self, dato, siguiente=None):
+        self.dato = dato
+        self.siguiente = siguiente
+
+    def __str__(self):
+        return str(self.dato)
+
+class _IteradorListaEnlazada():
+    """Iterador para la clase ListaEnlazada."""
+
+    def __init__(self, prim):
+        self.actual = prim
+
+    def __next__(self):
+        """Devuelve uno a uno los elementos de la lista."""
+        if self.actual == None:
+            raise StopIteration("No hay más elementos en la lista")
+        dato = self.actual.dato
+        self.actual = self.actual.siguiente
+        return dato
+
+class ListaEnlazada():
+    """Lista enlazada de Nodos. Solo guarda una referencia al primer nodo."""
+
+    def __init__(self):
+        self.prim = None
+        self.len = 0
+
+    def esta_vacia(self):
+        return self.prim is None
+
+    def tamanio(self):
+        return self.len
+
+    def insertar_al_inicio(self, dato):
+        self.prim = Nodo(dato, self.prim)
+        self.len += 1
+
+    def insertar_al_final(self, dato):
+        nuevo = Nodo(dato)
+        if self.prim is None:
+            self.prim = nuevo
+        else:
+            # Hay que recorrer toda la lista hasta el último nodo.
+            n_act = self.prim
+            while n_act.siguiente is not None:
+                n_act = n_act.siguiente
+            n_act.siguiente = nuevo
+        self.len += 1
+
+    def quitar_primero(self):
+        """Devuelve el dato que estaba al frente y lo saca de la lista."""
+        if self.prim is None:
+            raise IndexError("La lista está vacía")
+        dato = self.prim.dato
+        self.prim = self.prim.siguiente
+        self.len -= 1
+        return dato
+
+    def remove(self, x):
+        """Elimina la primera aparición de x en la lista.
+           Levanta ValueError si x no está."""
+        if self.prim is None:
+            raise ValueError("La lista está vacía")
+        # Caso particular: x está en el primer nodo
+        if self.prim.dato == x:
+            self.prim = self.prim.siguiente
+        else:
+            # Busca el nodo anterior al que contiene a x
+            n_ant = self.prim
+            n_act = n_ant.siguiente
+            while n_act is not None and n_act.dato != x:
+                n_ant = n_act
+                n_act = n_ant.siguiente
+            if n_act is None:
+                raise ValueError("El valor no está en la lista.")
+            n_ant.siguiente = n_act.siguiente
+        self.len -= 1
+
+    def __iter__(self):
+        return _IteradorListaEnlazada(self.prim)
+
+class Playlist():
+    """Guarda canciones en una ListaEnlazada. No tiene tope de cantidad."""
+
+    def __init__(self):
+        self.canciones = ListaEnlazada()
+
+    def agregar(self, cancion):
+        self.canciones.insertar_al_final(cancion)
+
+    def quitar(self, id):
+        """Saca la canción con ese id.
+           Si no está en la playlist, levanta CancionNoEncontradaError."""
+        for cancion in self.canciones:
+            if cancion.id == id:
+                # remove compara con __eq__, o sea por id
+                self.canciones.remove(cancion)
+                return cancion
+        raise CancionNoEncontradaError("No hay ninguna canción con id " + str(id) + " en la playlist.")
+
+    def listar(self):
+        resultado = []
+        for cancion in self.canciones:
+            resultado.append(str(cancion))
+        return resultado
+
+    def duracion_total(self):
+        total = 0
+        for cancion in self.canciones:
+            total += cancion.duracion_seg
+        return total
+
+
+#teoría 4:
+#Para insertar al final con n elementos hay que recorrer los n nodos, porque la lista solo conoce el primero y 
+#tiene que avanzar hasta encontrar el último (n - 1 saltos). Es una operación de orden n.

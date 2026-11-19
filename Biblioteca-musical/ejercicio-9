@@ -1,0 +1,73 @@
+# Parcial - ejercicio 9 - canciones.csv
+
+from pathlib import Path
+from ejercicio_01 import Cancion
+from ejercicio_02 import Biblioteca
+
+
+#excepción propia de este ejercicio (la usa también el ejercicio 10)
+class ArchivoInvalidoError(Exception):
+    pass
+
+
+ENCABEZADO_CSV = ["id", "titulo", "artista", "album", "genero", "anio", "duracion_seg"]
+
+
+def _separar_campos(linea):
+    """Separa una línea de texto por las comas y devuelve la lista de campos.
+       Ignora el salto de línea del final."""
+    campos = []
+    campo = ""
+    for caracter in linea:
+        if caracter == ",":
+            campos.append(campo)
+            campo = ""
+        elif caracter != "\n" and caracter != "\r":
+            campo = campo + caracter
+    campos.append(campo)
+    return campos
+
+
+def guardar_canciones_csv(ruta, biblioteca):
+    with open(ruta, "w", encoding="utf-8") as f:
+        f.write("id,titulo,artista,album,genero,anio,duracion_seg\n")
+        for c in biblioteca:
+            linea = str(c.id) + "," + c.titulo + "," + c.artista + "," + c.album + ","
+            linea = linea + c.genero + "," + str(c.anio) + "," + str(c.duracion_seg) + "\n"
+            f.write(linea)
+
+
+def cargar_canciones_csv(ruta):
+    """Rearma objetos Cancion a partir del archivo.
+       Levanta ArchivoInvalidoError si el archivo no existe, si el encabezado
+       no es el pedido o si una fila tiene menos columnas."""
+    if not Path(ruta).is_file():
+        raise ArchivoInvalidoError("El archivo '" + str(ruta) + "' no existe.")
+
+    biblioteca = Biblioteca()
+    with open(ruta, "r", encoding="utf-8") as f:
+        encabezado = _separar_campos(f.readline())
+        if encabezado != ENCABEZADO_CSV:
+            raise ArchivoInvalidoError("El encabezado del archivo no es el pedido.")
+
+        numero_fila = 1
+        for linea in f:
+            numero_fila += 1
+            campos = _separar_campos(linea)
+            if campos == [""]:
+                continue  # línea en blanco
+            if len(campos) < 7:
+                raise ArchivoInvalidoError("La fila " + str(numero_fila) + " tiene menos columnas de las pedidas.")
+            try:
+                cancion = Cancion(int(campos[0]), campos[1], campos[2], campos[3],
+                                  campos[4], int(campos[5]), int(campos[6]))
+            except ValueError:
+                raise ArchivoInvalidoError("La fila " + str(numero_fila) + " tiene un número inválido.")
+            biblioteca.agregar(cancion)
+    return biblioteca
+
+
+#teoría 9:
+#sí, hay que recorrer las anteriores. El CSV es un archivo de texto con filas de distinto largo (cada campo ocupa lo que ocupa su texto), 
+#entonces no se puede calcular en qué posición del archivo empieza la fila 50: hay
+#que leer las filas anteriores para ir contando los saltos de línea.

@@ -1,0 +1,49 @@
+# Parcial - ejercicio 7 - búsqueda
+
+from ejercicio_02 import CancionNoEncontradaError
+
+
+def busqueda_lineal(canciones, campo, valor):
+    """Devuelve todas las canciones cuyo campo es igual a valor, en el orden
+       original. campo puede ser "titulo", "artista" o "genero".
+       Si no hay ninguna, devuelve la lista vacía."""
+    if campo != "titulo" and campo != "artista" and campo != "genero":
+        raise ValueError("El campo debe ser 'titulo', 'artista' o 'genero'.")
+
+    encontradas = []
+    for cancion in canciones:
+        if campo == "titulo":
+            dato = cancion.titulo
+        elif campo == "artista":
+            dato = cancion.artista
+        else:
+            dato = cancion.genero
+
+        if dato == valor:
+            encontradas.append(cancion)
+    return encontradas
+
+
+def busqueda_binaria_por_titulo(canciones_ordenadas, titulo):
+    """Búsqueda binaria.
+       Pre: la lista está ordenada alfabéticamente por título.
+       Si el título no está, levanta CancionNoEncontradaError."""
+    izq = 0
+    der = len(canciones_ordenadas) - 1
+
+    while izq <= der:
+        medio = (izq + der) // 2
+        if canciones_ordenadas[medio].titulo == titulo:
+            return canciones_ordenadas[medio]
+        elif canciones_ordenadas[medio].titulo > titulo:
+            der = medio - 1
+        else:
+            izq = medio + 1
+
+    raise CancionNoEncontradaError("No hay ninguna canción con el título '" + titulo + "'.")
+
+
+#teoría 7:
+#la búsqueda binaria pide la lista ordenada por título porque en cada paso compara con el elemento del medio y 
+#descarta una mitad: si no estuviera ordenada, la mitad que se descarta podría tener justo el título buscado.
+#La binaria es O(log n) en el peor caso. La búsqueda lineal por artista recorre toda la lista, por lo tanto es O(n).

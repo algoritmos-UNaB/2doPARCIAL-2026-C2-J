@@ -1,0 +1,97 @@
+# Parcial - ejercicio 10 - registros binarios
+
+import struct
+from pathlib import Path
+from ejercicio_01 import Cancion
+from ejercicio_02 import Biblioteca
+from ejercicio_09 import ArchivoInvalidoError
+
+
+FORMATO_ENCABEZADO = "=4s1sI"
+FORMATO_REGISTRO = "=I40s40s40s16sHH"
+TAM_ENCABEZADO = struct.calcsize(FORMATO_ENCABEZADO)   #9 bytes
+TAM_REGISTRO = struct.calcsize(FORMATO_REGISTRO)       #144 bytes
+
+
+def _registro_a_bytes(c):
+    """Arma el registro de la canción. Las cadenas van en UTF-8, recortadas al
+       ancho; struct las completa con \\0."""
+    titulo = c.titulo.encode("utf-8")[:40]
+    artista = c.artista.encode("utf-8")[:40]
+    album = c.album.encode("utf-8")[:40]
+    genero = c.genero.encode("utf-8")[:16]
+    return struct.pack(FORMATO_REGISTRO, c.id, titulo, artista, album, genero, c.anio, c.duracion_seg)
+
+
+def _texto_desde_bytes(datos):
+    """Corta en el primer \\0 y decodifica."""
+    i = 0
+    while i < len(datos) and datos[i] != 0:
+        i += 1
+    return datos[:i].decode("utf-8", "ignore")
+
+
+def _bytes_a_cancion(datos):
+    id, titulo, artista, album, genero, anio, duracion_seg = struct.unpack(FORMATO_REGISTRO, datos)
+    return Cancion(id, _texto_desde_bytes(titulo), _texto_desde_bytes(artista),
+                   _texto_desde_bytes(album), _texto_desde_bytes(genero), anio, duracion_seg)
+
+
+def _leer_encabezado(f):
+    """Lee y valida el encabezado. Devuelve la cantidad de registros.
+       Levanta ArchivoInvalidoError si la magia no es AYED, si el tema no es M
+       o si el archivo no cierra justo en 9 + cantidad * 144 bytes."""
+    #tamaño total del archivo
+    f.seek(0, 2)
+    tamanio = f.tell()
+    f.seek(0)
+
+    if tamanio < TAM_ENCABEZADO:
+        raise ArchivoInvalidoError("El archivo es demasiado chico para tener encabezado.")
+
+    magia, tema, cantidad = struct.unpack(FORMATO_ENCABEZADO, f.read(TAM_ENCABEZADO))
+    if magia != b"AYED":
+        raise ArchivoInvalidoError("La magia del archivo no es AYED.")
+    if tema != b"M":
+        raise ArchivoInvalidoError("El tema del archivo no es M.")
+    if tamanio != TAM_ENCABEZADO + cantidad * TAM_REGISTRO:
+        raise ArchivoInvalidoError("El tamaño del archivo no coincide con la cantidad de registros.")
+    return cantidad
+
+
+def guardar_binario(ruta, biblioteca):
+    with open(ruta, "wb") as f:
+        f.write(struct.pack(FORMATO_ENCABEZADO, b"AYED", b"M", biblioteca.cantidad()))
+        for c in biblioteca:
+            f.write(_registro_a_bytes(c))
+
+
+def cargar_binario(ruta):
+    if not Path(ruta).is_file():
+        raise ArchivoInvalidoError("El archivo '" + str(ruta) + "' no existe.")
+
+    biblioteca = Biblioteca()
+    with open(ruta, "rb") as f:
+        cantidad = _leer_encabezado(f)
+        for i in range(cantidad):
+            biblioteca.agregar(_bytes_a_cancion(f.read(TAM_REGISTRO)))
+    return biblioteca
+
+
+def actualizar_registro(ruta, posicion, cancion):
+    """Escribe un solo registro en su lugar, sin reescribir el resto del archivo.
+       posicion es 0-based."""
+    if not Path(ruta).is_file():
+        raise ArchivoInvalidoError("El archivo '" + str(ruta) + "' no existe.")
+
+    with open(ruta, "r+b") as f:
+        cantidad = _leer_encabezado(f)
+        if posicion < 0 or posicion >= cantidad:
+            raise ArchivoInvalidoError("La posición " + str(posicion) + " está fuera de rango.")
+        f.seek(TAM_ENCABEZADO + posicion * TAM_REGISTRO)
+        f.write(_registro_a_bytes(cancion))
+
+
+#teoría 10:
+#el registro de posición k empieza en el byte:
+#TAM_ENCABEZADO + k * TAM_REGISTRO  =  9 + k * 144 (hay que saltear el encabezado y los k registros anteriores, todos del mismo largo).

@@ -1,0 +1,41 @@
+# Parcial - ejercicio 2 - biblioteca
+
+#excepción propia de este ejercicio (la usan también los ejercicios 3, 4 y 7)
+class CancionNoEncontradaError(Exception):
+    pass
+
+
+class Biblioteca():
+    """Catálogo con todas las canciones (se guardan en una lista de Python)."""
+
+    def __init__(self):
+        self.canciones = []
+
+    def agregar(self, cancion):
+        self.canciones.append(cancion)
+
+    def cantidad(self):
+        return len(self.canciones)
+
+    def obtener(self, id):
+        """Devuelve la canción con ese id.
+           Si no está, levanta CancionNoEncontradaError."""
+        for cancion in self.canciones:
+            if cancion.id == id:
+                return cancion
+        raise CancionNoEncontradaError("No hay ninguna canción con id " + str(id) + " en la biblioteca.")
+
+    def listar(self):
+        """Devuelve una lista de strings, uno por canción."""
+        resultado = []
+        for cancion in self.canciones:
+            resultado.append(str(cancion))
+        return resultado
+
+    def __iter__(self):
+        return iter(self.canciones)
+
+
+#teoría 2:
+#la biblioteca guarda el catálogo completo: todas las canciones que existen.
+#una playlist guarda solo una selección de canciones, en el orden en que el usuario las fue agregando.

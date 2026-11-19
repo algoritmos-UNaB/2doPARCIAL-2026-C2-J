@@ -1,0 +1,42 @@
+# Parcial - ejercicio 8 - ordenamiento
+
+def ordenar_por_anio_seleccion(canciones):
+    """Selección. Año de mayor a menor. Ordena la misma lista y la devuelve."""
+    for i in range(len(canciones)):
+        #busca la posición de la canción con mayor año entre i y el final
+        pos_mayor = i
+        for j in range(i + 1, len(canciones)):
+            if canciones[j].anio > canciones[pos_mayor].anio:
+                pos_mayor = j
+        #la pone en la posición i
+        canciones[i], canciones[pos_mayor] = canciones[pos_mayor], canciones[i]
+    return canciones
+
+
+def ordenar_por_duracion_insercion(canciones):
+    """Inserción. duracion_seg de menor a mayor. Ordena la misma lista y la devuelve."""
+    for i in range(len(canciones) - 1):
+        #si la canción de la posición i+1 está desordenada respecto a la
+        #de la posición i, la reubica dentro del segmento [0:i]
+        if canciones[i + 1].duracion_seg < canciones[i].duracion_seg:
+            _reubicar(canciones, i + 1)
+    return canciones
+
+
+def _reubicar(canciones, p):
+    """Reubica la canción de la posición p dentro del segmento [0:p-1]."""
+    c = canciones[p]
+    j = p
+    while j > 0 and c.duracion_seg < canciones[j - 1].duracion_seg:
+        #desplaza hacia la derecha para dejar lugar
+        canciones[j] = canciones[j - 1]
+        j -= 1
+    canciones[j] = c
+
+
+#teoría 8:
+#selección: en el peor caso hace del orden de n^2 comparaciones (y también en
+#el mejor caso, porque siempre recorre el resto de la lista para buscar el mayor).
+#Inserción: en el peor caso (lista en orden inverso) también es del orden de n^2; si la lista ya está ordenada solo hace del orden de n.
+#El que conserva el orden relativo de dos canciones con la misma clave es el de inserción, porque solo mueve una canción cuando es estrictamente
+#menor que la anterior. Selección hace intercambios entre posiciones lejanas y puede cambiarlas de orden.

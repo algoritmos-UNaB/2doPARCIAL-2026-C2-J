@@ -1,0 +1,38 @@
+# Parcial - ejercicio 1 - canción
+
+class Cancion():
+    """Representa una canción del catálogo."""
+
+    def __init__(self, id, titulo, artista, album, genero, anio, duracion_seg):
+        self.id = id
+        self.titulo = titulo
+        self.artista = artista
+        self.album = album
+        self.genero = genero
+        self.anio = anio
+        self.duracion_seg = duracion_seg
+
+    def duracion_mmss(self):
+        """Devuelve la duración como m:ss (316 -> '5:16', 65 -> '1:05')."""
+        minutos = self.duracion_seg // 60
+        segundos = self.duracion_seg % 60
+        if segundos < 10:
+            texto_segundos = "0" + str(segundos)
+        else:
+            texto_segundos = str(segundos)
+        return str(minutos) + ":" + texto_segundos
+
+    def __str__(self):
+        return f"#{self.id} {self.titulo} | {self.artista} | {self.anio} | {self.duracion_mmss()}"
+
+    def __eq__(self, other):
+        #dos canciones son iguales si tienen el mismo id.
+        if type(other) != type(self):
+            return False
+        return self.id == other.id
+
+
+#teoría 1:
+#La duración se guarda en segundos enteros porque con un número se puede
+#sumar, comparar y ordenar directamente (duracion_total, ordenar por duración).
+#El formato m:ss es solo para mostrarla, por eso duracion_mmss la calcula cada vez; en un string "5:16" habría que convertirlo antes de cada cuenta.
