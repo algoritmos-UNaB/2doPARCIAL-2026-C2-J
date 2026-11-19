@@ -10,6 +10,7 @@ Métodos:
 - `__str__` devuelve `#12 Jijiji | Patricio Rey y sus Redonditos de Ricota | 1988 | 5:16`.
 - `__eq__` compara por `id`.
 
+```python
 class Cancion:
     def __init__(self, id: int, titulo: str, artista: str, album: str, genero: str, anio: int, duracion_seg: int):
         self.id = int(id)
@@ -32,6 +33,7 @@ class Cancion:
         if not isinstance(other, Cancion):
             return False
         return self.id == other.id
+```
 
 **Teoría.** La duración se guarda en segundos enteros y `duracion_mmss` la calcula. Explicar en dos oraciones por qué conviene guardarla así y no en un string `"5:16"`.
 

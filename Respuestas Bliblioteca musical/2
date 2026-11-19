@@ -10,6 +10,7 @@ Definir la clase `Biblioteca`, el catálogo de todas las canciones.
 
 La playlist no vive en esta clase.
 
+```python
 class CancionNoEncontradaError(Exception):
     pass
 
@@ -33,6 +34,7 @@ class Biblioteca:
 
     def __iter__(self):
         return iter(self._canciones.values())
+```
 
 **Teoría.** En una o dos oraciones: qué guarda la biblioteca y qué guarda una playlist.
 
