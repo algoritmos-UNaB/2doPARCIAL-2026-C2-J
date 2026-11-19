@@ -19,8 +19,6 @@ class Cancion:
                 f"{self.anio} | {self.duracion_mmss()}")
 
     def __eq__(self, otro):
-        if not isinstance(otro, Cancion):
-            return NotImplemented
         return self.id == otro.id
 
 # TEORIA

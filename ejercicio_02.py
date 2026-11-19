@@ -3,9 +3,6 @@
 class CancionNoEncontradaError(Exception):
     """La cancion pedida no existe en la coleccion consultada."""
 
-    def __init__(self, mensaje="La cancion no fue encontrada"):
-        super().__init__(mensaje)
-
 
 class Biblioteca:
     def __init__(self):
