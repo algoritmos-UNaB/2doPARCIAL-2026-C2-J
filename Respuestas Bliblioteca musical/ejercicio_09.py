@@ -1,21 +1,3 @@
-## Ejercicio 9 — `canciones.csv` (9 pts)
-
-Persistir la biblioteca en CSV, UTF-8, separador coma, con encabezado:
-
-```text
-id,titulo,artista,album,genero,anio,duracion_seg
-```
-
-```python
-def guardar_canciones_csv(ruta, biblioteca): ...
-def cargar_canciones_csv(ruta) -> Biblioteca: ...
-```
-
-`cargar_canciones_csv` rearma objetos `Cancion`. Lanza `ArchivoInvalidoError` si el archivo no existe, si el encabezado no es el pedido o si una fila tiene menos columnas.
-
-Las versiones quedan fuera de este archivo.
-
-```python
 import csv
 import os
 
@@ -58,8 +40,7 @@ def cargar_canciones_csv(ruta: str) -> Biblioteca:
             except ValueError:
                 raise ArchivoInvalidoError(f"Error de formato de datos en la fila {num_linea}.")
     return biblioteca
-```
 
-**Teoría.** Para leer la canción de la fila 50, ¿hay que recorrer las filas anteriores? Explicar en una oración por qué, a partir de cómo está guardado el CSV.
-
-# Rta: Si, es necesario leer secuencialmente las 49 filas anteriores porque las lineas en un archivo CSV tienen una longitud en bytes variable al estar delimitadas por saltos de linea, impidiendo calcular el offset exacto en disco sin procesar el texto previo.
+# Rta: Si, es necesario leer secuencialmente las 49 filas anteriores porque las lineas en un archivo 
+#CSV tienen una longitud en bytes variable al estar delimitadas por saltos de linea, impidiendo calcular el offset 
+#exacto en disco sin procesar el texto previo.

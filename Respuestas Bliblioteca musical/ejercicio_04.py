@@ -1,30 +1,3 @@
-## Ejercicio 4 — Playlist sobre lista enlazada (14 pts)
-
-Implementar, con nodos propios:
-
-```python
-class Nodo:
-    def __init__(self, dato, siguiente=None): ...
-
-class ListaEnlazada:
-    def esta_vacia(self) -> bool: ...
-    def tamanio(self) -> int: ...
-    def insertar_al_inicio(self, dato): ...
-    def insertar_al_final(self, dato): ...
-    def quitar_primero(self): ...
-    def __iter__(self): ...
-```
-
-`quitar_primero` devuelve el dato que estaba al frente y lo saca de la lista. El iterador recorre desde el primero hasta el último y termina con `StopIteration` (o con `yield`).
-
-Definir `Playlist`, que guarda canciones en una `ListaEnlazada`. No tiene tope de cantidad.
-
-- `agregar(cancion)` la inserta al final.
-- `quitar(id)` saca la canción con ese `id`. Si no está en la playlist, lanza `CancionNoEncontradaError`.
-- `listar()` devuelve los `__str__` recorriendo el iterador de la lista.
-- `duracion_total()` devuelve la suma de `duracion_seg` recorriendo el iterador. Playlist vacía: `0`.
-
-```python
 class Nodo:
     def __init__(self, dato, siguiente=None):
         self.dato = dato
@@ -104,8 +77,7 @@ class Playlist:
 
     def duracion_total(self) -> int:
         return sum(cancion.duracion_seg for cancion in self._lista)
-```
 
-**Teoría.** La lista solo guarda una referencia al primer nodo. ¿Cuántos nodos se recorren para insertar al final cuando ya hay `n` elementos?
-
-# Rta: Al mantener unicamente una referencia al primer nodo, para insertar un elemento al final es necesario recorrer los nodos existentes secuencialmente hasta alcanzar el ultimo nodo y actualizar su atributo siguiente. Por lo tanto, se recorren exactamente n nodos.
+# Rta teoria: Al mantener unicamente una referencia al primer nodo, para insertar un elemento al final es 
+# necesario recorrer los nodos existentes secuencialmente hasta alcanzar el ultimo nodo y actualizar su atributo siguiente. 
+#Por lo tanto, se recorren exactamente n nodos.

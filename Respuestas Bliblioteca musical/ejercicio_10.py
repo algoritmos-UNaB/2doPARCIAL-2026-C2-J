@@ -1,31 +1,3 @@
-## Ejercicio 10 — Registros binarios (9 pts)
-
-Archivo binario de registros de longitud fija, con `struct` y formato estándar (`=`, sin padding de alineación).
-
-Encabezado, 9 bytes: magia `4s` con `b"AYED"`, tema `1s` con `b"M"`, cantidad `I`.
-
-Registro, 144 bytes:
-
-| Campo | Formato |
-| --- | --- |
-| id | `I` |
-| titulo | `40s` |
-| artista | `40s` |
-| album | `40s` |
-| genero | `16s` |
-| anio | `H` |
-| duracion_seg | `H` |
-
-Las cadenas van en UTF-8, recortadas al ancho y completadas con `\0`. Al leer, se corta en el primer `\0`. El artista más largo de los datos de prueba entra en 40 bytes.
-
-```python
-def guardar_binario(ruta, biblioteca): ...
-def cargar_binario(ruta) -> Biblioteca: ...
-def actualizar_registro(ruta, posicion, cancion): ...
-```
-
-`posicion` es 0-based. `actualizar_registro` escribe un solo registro en su lugar (`seek`) y no reescribe el resto del archivo. Lanza `ArchivoInvalidoError` si la magia no es `AYED`, si el tema no es `M`, si el archivo no cierra justo en `9 + cantidad * 144` bytes, o si `posicion` está fuera de rango.
-```python
 import struct
 
 # Encabezado: 4s (magia) + 1s (tema) + I (cantidad) = 9 bytes
@@ -122,7 +94,6 @@ def actualizar_registro(ruta: str, posicion: int, cancion: Cancion):
             cancion.duracion_seg
         )
         f.write(reg_bytes)
-```
 
-**Teoría.** Escribir la fórmula del byte donde empieza el registro de posición `k`. Usar el tamaño del encabezado y el tamaño del registro.
-# Rta: Formula: byte = 9 + (k * 144); donde 9 corresponde a la longitud fija del encabezado en bytes y 144 al tamaño uniforme de cada registro.
+# Rta: Formula: byte = 9 + (k * 144); donde 9 corresponde a la longitud fija del encabezado en bytes y 
+#144 al tamaño uniforme de cada registro.
