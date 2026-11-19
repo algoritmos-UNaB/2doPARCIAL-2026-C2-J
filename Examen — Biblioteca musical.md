@@ -6,6 +6,8 @@
 **Lenguaje:** Python 3  
 **Puntaje:** 100 puntos. La nota sobre 10 es `puntos / 10`. Se aprueba con 60 puntos.
 
+**Estudiante:** Passini, Camila Belen - comisión 3
+
 Cada ejercicio pide una parte práctica (clases, objetos y funciones) y, al final, una pregunta teórica breve. Las excepciones de la consigna van dentro del ejercicio que las necesita: no hay un ejercicio aparte de excepciones.
 
 Entregar un archivo por ejercicio: `ejercicio_01.py` … `ejercicio_10.py`. La respuesta teórica va al final de ese archivo, en comentarios.
