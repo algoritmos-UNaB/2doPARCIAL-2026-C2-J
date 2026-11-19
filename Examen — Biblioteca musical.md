@@ -76,6 +76,7 @@ Métodos:
 
 **Teoría.** La duración se guarda en segundos enteros y `duracion_mmss` la calcula. Explicar en dos oraciones por qué conviene guardarla así y no en un string `"5:16"`.
 
+
 ---
 
 ## Ejercicio 2 — Biblioteca (8 pts)
@@ -143,6 +144,99 @@ Definir `Playlist`, que guarda canciones en una `ListaEnlazada`. No tiene tope d
 - `duracion_total()` devuelve la suma de `duracion_seg` recorriendo el iterador. Playlist vacía: `0`.
 
 **Teoría.** La lista solo guarda una referencia al primer nodo. ¿Cuántos nodos se recorren para insertar al final cuando ya hay `n` elementos?
+
+class Nodo:
+    def __init__(self, dato, siguiente=None):
+        self.dato= dato
+        self.siguiente = siguiente
+
+class ListaEnlazada:
+    def __ init__(self):
+        self.primero = None
+
+    def esta_vacia(self) -> bool: 
+        return self.primero is None
+
+    def tamanio(self) -> int:
+        contador = 0
+        actual = self.primero 
+
+        while actual is not None:
+            contador += 1
+            actual = actual.siguiente
+
+       return contador
+
+    def insertar_al_inicio(self, dato):
+        nuevo = Nodo(dato, self.primero)
+        self.primero = nuevo
+    def insertar_al_final(self, dato):
+        nuevo = Nodo(dato)
+
+        if self.esta_vacia()
+            self.primero = nuevo 
+            return
+
+        actual = self.primero
+
+        while actual.siguiente is not None:
+            actual = actual.siguiente
+
+        actual.siguiente = nuevo
+
+    def quitar-primero(self):
+        if self.esta_vacia():
+         retur None
+
+        dato = self.primero.dato
+        self.primero = self.primero.siguiente
+
+        return dato
+
+    def__iter__(self)
+        actual = self.primero
+
+        while actual is not None:
+            yield actual.dato
+            actual = actual.siguiente 
+
+class Playlist:
+    def __init__(self):
+        self.canciones = ListaEnlazada()
+
+    def agregar(self, cancion):
+        self.canciones.insertar_al_final(cancion)
+
+    def quitar(self,id):
+        actual = self.canciones.primero 
+        anterior = None
+
+    while actual es not None:
+        if actual.dato.id == id:
+
+            if anterior is None:
+                self.canciones.primero =actual.siguiente
+            els: 
+                anterior.siguiente = actual.siguiente
+            return actual.dato
+
+    def listar(self):
+        resultado = []
+
+        for cancion in self.canciones:
+            resultado.append(str(cancion))
+
+        return resultado
+
+    def duracion_total(self):
+        total = 0
+
+        for cancion in self.canciones:
+            total += cancion.duracion_seg
+
+        return total
+    
+        
 
 ---
 
