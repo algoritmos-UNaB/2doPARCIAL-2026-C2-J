@@ -93,6 +93,32 @@ La playlist no vive en esta clase.
 
 **Teoría.** En una o dos oraciones: qué guarda la biblioteca y qué guarda una playlist.
 
+Class Biblioteca:
+    def __init__(self):
+        self.canciones =[]
+
+    def agregar(self, cancion):
+        self.canciones.append(cancion)
+
+    def cantidad(self):
+        return len(self.canciones)
+        
+    def obtener(self, id):
+        for cancion in self.canciones:
+            if cancion.id == id:
+                return cancion 
+
+         raise CancionNoEncontradaError(
+             f"No se encontro la cancion con ID {id}")
+
+    def listar(self)
+        return [str(cancion) for cancion in self.canciones]
+
+    def __iter__(self)
+        return iter(self.canciones)
+
+#la biblioteca guarda el catalogo de las canciones 
+# el playlist guarda la seleccion de canciones reproducidas
 ---
 
 ## Ejercicio 3 — Versiones (12 pts)
