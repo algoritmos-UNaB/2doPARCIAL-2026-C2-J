@@ -114,7 +114,33 @@ def versiones_de(biblioteca, versiones, cancion_id) -> list:
 Con los datos de prueba, Jijiji (12) tiene el vivo Ji Ji Ji (13) y, debajo, el remix (70). Gracias a la Vida de Violeta Parra (61) tiene el cover de Mercedes Sosa (16).
 
 **Teoría.** Escribir el caso base y la secuencia de llamadas de `versiones_de(..., 12)`, indicando qué lista devuelve cada llamada al volver.
+class CancionNoEncontradaError(Excepcion):
+    pass
 
+    def versiones_de(biblioteca, versiones, cancion_id):
+
+    if cancion_id not in biblioteca:
+        raise CancionNoEncontradaError(f"La cancion con ID{cancion_id} no existe")
+
+    resultado = []
+
+#versiones directas
+    directas = []
+
+    for id_version, version_de_id, tipo in versiones:
+        if versiones_de_id == cancion_id: 
+            directas.append((id_version, tipo))
+
+    for id_version, tipo in directas:
+         titulo = biblioteca[id_version]["titulo"]
+         resultado.append((titulo, tipo))
+    resultado.extend(versiones_de(biblioteca, versiones, id_versiones))
+
+    return resultado
+
+#el caso base detiene la recursividad. y la funcion recursiva dice que si llamo la cancion 12 se biusca ls derivadas , ej cancion 13 y tambien se busca la derivada de esa cancion.
+    
+    
 ---
 
 ## Ejercicio 4 — Playlist sobre lista enlazada (14 pts)
