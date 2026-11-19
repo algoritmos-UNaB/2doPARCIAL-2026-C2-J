@@ -1,45 +1,46 @@
 from ejercicio_04 import ListaEnlazada
 
-class PilaVaciaError(Exception):
-    """Se intenta desapilar o ver el tope de una pila vacia."""
+class ColaVaciaError(Exception):
+    """Se intenta desencolar o ver el frente de una cola vacia."""
 
-    def __init__(self, mensaje="La pila esta vacia"):
+    def __init__(self, mensaje="La cola esta vacia"):
         super().__init__(mensaje)
 
-class Pila:
+class Cola:
     def __init__(self):
         self._lista = ListaEnlazada()
 
-    def apilar(self, dato):
-        self._lista.insertar_al_inicio(dato)
+    def encolar(self, dato):
+        self._lista.insertar_al_final(dato)
 
-    def desapilar(self):
+    def desencolar(self):
         if self._lista.esta_vacia():
-            raise PilaVaciaError("No se puede desapilar: la pila esta vacia")
+            raise ColaVaciaError("No se puede desencolar: la cola esta vacia")
         return self._lista.quitar_primero()
 
-    def ver_tope(self):
+    def ver_frente(self):
         if self._lista.esta_vacia():
-            raise PilaVaciaError("No hay tope: la pila esta vacia")
+            raise ColaVaciaError("No hay frente: la cola esta vacia")
         return self._lista.ver_primero()
 
     def esta_vacia(self):
         return self._lista.esta_vacia()
 
-class HistorialReproduccion:
+class ColaReproduccion:
     def __init__(self):
-        self._pila = Pila()
+        self._cola = Cola()
 
-    def registrar(self, cancion):
-        self._pila.apilar(cancion)
+    def encolar_cancion(self, cancion):
+        self._cola.encolar(cancion)
 
-    def anterior(self):
-        return self._pila.desapilar()
+    def siguiente(self):
+        return self._cola.desencolar()
 
-    def ultima(self):
-        return self._pila.ver_tope()
+    def que_sigue(self):
+        return self._cola.ver_frente()
 
 # TEORIA
-# El primer anterior() devuelve "De Musica Ligera". La pila es LIFO (el ultimo en
-# entrar es el primero en salir): se registraron Jijiji, Alfonsina y el mar y
-# De Musica Ligera, en ese orden, asi que el tope es la ultima apilada.
+# El primer siguiente() devuelve "Jijiji". La cola es FIFO (el primero en entrar
+# es el primero en salir), asi que sale en el mismo orden en que se encolo. La
+# pila del ejercicio 5 es LIFO: con los mismos tres elementos el primero en
+# salir era el ultimo registrado (De Musica Ligera).
