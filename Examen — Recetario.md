@@ -4,7 +4,7 @@
 **Cuatrimestre:** C2 2026  
 **Tema:** Recetario  
 **Lenguaje:** Python 3  
-**Puntaje:** 100 puntos
+**Puntaje:** 100 puntos 
 
 Cada ejercicio corresponde a una fila del mapa del dominio de la consigna (sección 2). Las excepciones no tienen ejercicio propio: se implementan en el ejercicio donde el dominio las necesita.
 
