@@ -1,0 +1,152 @@
+#class Receta:
+    nombre: str
+    tiempo_minutos: int
+    ingredientes: list[Ingrediente] = field(default_factory=list)
+    salsas_necesarias: list[str] = field(default_factory=list)
+    carnes_necesarias: list[dict[str, float | str]] = field(default_factory=list)
+    metodos_preparacion: list[str] = field(default_factory=list)
+
+    def peso_total_gramos(self) -> float:
+        total_ingredientes = sum(ing.gramos for ing in self.ingredientes)
+        total_carnes = sum(float(carne.get("gramos", 0.0)) for carne in self.carnes_necesarias)
+        return total_ingredientes + total_carnes
+
+    def mostrar_detalle(self) -> None:
+        print(f"=== {self.nombre.upper()} ===")
+        print(f"Tiempo necesario: {self.tiempo_minutos} minutos")
+
+        print("Ingredientes (en gramos):")
+        for ing in self.ingredientes:
+            print(f"  - {ing}")
+
+        if self.salsas_necesarias:
+            print("Salsas necesarias:", ", ".join(self.salsas_necesarias))
+        else:
+            print("Salsas necesarias: Ninguna")
+
+        if self.carnes_necesarias:
+            print("Carnes necesarias (en gramos):")
+            for carne in self.carnes_necesarias:
+                print(f"  - {carne['corte']}: {carne['gramos']} g")
+        else:
+            print("Carnes necesarias: Ninguna")
+
+        print("Métodos de preparación:")
+        for i, paso in enumerate(self.metodos_preparacion, start=1):
+            print(f"  {i}. {paso}")
+
+        print(f"Peso total registrado: {self.peso_total_gramos()} g\n")
+
+
+class LibroRecetas:
+    def __init__(self) -> None:
+        self._recetas: dict[str, Receta] = {}
+
+    def agregar_receta(self, receta: Receta) -> None:
+        clave = receta.nombre.strip().lower()
+        self._recetas[clave] = receta
+
+    def obtener_receta(self, nombre: str) -> Receta:
+        clave = nombre.strip().lower()
+        if clave not in self._recetas:
+            raise RecetaNoEncontrada(nombre)
+        return self._recetas[clave]
+
+    def listar_recetas(self) -> list[str]:
+        return [receta.nombre for receta in self._recetas.values()]
+
+    def mostrar_todas(self) -> None:
+        for receta in self._recetas.values():
+            receta.mostrar_detalle()
+
+
+def crear_recetario_base() -> LibroRecetas:
+    libro = LibroRecetas()
+
+    chimichurri = Receta(
+        nombre="Chimichurri",
+        tiempo_minutos=15,
+        ingredientes=[
+            Ingrediente("Perejil fresco picado", 120.0),
+            Ingrediente("Orégano seco", 20.0),
+            Ingrediente("Ajo triturado", 35.0),
+            Ingrediente("Ají molido", 10.0),
+            Ingrediente("Aceite vegetal", 150.0),
+            Ingrediente("Vinagre de vino", 60.0),
+        ],
+        salsas_necesarias=["Salsa criolla"],
+        carnes_necesarias=[
+            {"corte": "Bife de chorizo", "gramos": 400.0},
+            {"corte": "Asado de tira", "gramos": 500.0},
+        ],
+        metodos_preparacion=[
+            "Picar finamente el perejil y triturar el ajo en gramos exactos.",
+            "Mezclar en un bowl el perejil, ajo, orégano seco y ají molido.",
+            "Incorporar el vinagre de vino y el aceite vegetal integrando bien.",
+            "Reposar al menos 15 minutos y servir acompañando las carnes o junto a salsa criolla.",
+        ],
+    )
+
+    salsa_criolla = Receta(
+        nombre="Salsa criolla",
+        tiempo_minutos=20,
+        ingredientes=[
+            Ingrediente("Cebolla morada", 150.0),
+            Ingrediente("Morrón rojo", 80.0),
+            Ingrediente("Morrón verde", 60.0),
+            Ingrediente("Aceite de girasol", 50.0),
+            Ingrediente("Vinagre de alcohol", 30.0),
+            Ingrediente("Sal fina", 5.0),
+        ],
+        salsas_necesarias=["Chimichurri"],
+        carnes_necesarias=[
+            {"corte": "Vacio", "gramos": 450.0},
+        ],
+        metodos_preparacion=[
+            "Cortar la cebolla morada y los morrones en cubos pequeños (brunoise).",
+            "Colocar las verduras en un recipiente y agregar la sal fina.",
+            "Incorporar el vinagre y el aceite de girasol, mezclando suavemente.",
+            "Dejar macerar 20 minutos para que se integren los sabores antes de servir.",
+        ],
+    )
+
+    sofrito = Receta(
+        nombre="Sofrito",
+        tiempo_minutos=25,
+        ingredientes=[
+            Ingrediente("Cebolla blanca", 180.0),
+            Ingrediente("Tomate perita triturado", 200.0),
+            Ingrediente("Ajo picado", 25.0),
+            Ingrediente("Aceite de oliva", 45.0),
+            Ingrediente("Pimentón dulce", 10.0),
+        ],
+        salsas_necesarias=[],
+        carnes_necesarias=[
+            {"corte": "Carne molida magra", "gramos": 300.0},
+        ],
+        metodos_preparacion=[
+            "Calentar el aceite de oliva a fuego medio y rehogar la cebolla blanca y el ajo.",
+            "Añadir el pimentón dulce revolviendo brevemente para evitar que se queme.",
+            "Sumar el tomate triturado y cocinar a fuego lento durante unos 25 minutos.",
+            "Integrar la carne o base deseada una vez lograda la textura espesa.",
+        ],
+    )
+
+    libro.agregar_receta(chimichurri)
+    libro.agregar_receta(salsa_criolla)
+    libro.agregar_receta(sofrito)
+    return libro
+
+
+if __name__ == "__main__":
+    libro_recetas = crear_recetario_base()
+    libro_recetas.mostrar_todas()
+
+    # Ejemplo de búsqueda válida y manejo de RecetaNoEncontrada
+    try:
+        receta_buscada = libro_recetas.obtener_receta("Chimichurri")
+        print(f"Búsqueda exitosa: {receta_buscada.nombre} ({receta_buscada.tiempo_minutos} min)")
+
+        libro_recetas.obtener_receta("Tuco")
+    except RecetaNoEncontrada as error:
+        print(f"Aviso controlado -> {error}")
