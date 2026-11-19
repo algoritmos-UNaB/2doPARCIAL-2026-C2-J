@@ -163,7 +163,37 @@ Definir `HistorialReproduccion`, que usa una `Pila` de canciones:
 - `ultima()` devuelve la última canción reproducida, sin sacarla.
 
 **Teoría.** Se registran, en este orden, Jijiji, Alfonsina y el mar, y De Música Ligera. ¿Qué devuelve el primer `anterior()`? ¿Por qué?
+class PilaVaciaError(excepcion):
+    pass
 
+class Pila:
+    def __init__(self):
+        self.datos = ListaEnlazada()
+    def apilar(self, dato)
+        self.datos.insertar_al_inicio(dato)
+    def desapilar(self):
+        if self.esta_vacia():
+           raice PilaVaciaError ("La pila esta vacia")
+        return self.datos.quitar_primero()
+    def ver_tope(self):
+        if self.esta_vacia():
+            raise PilaVaciaError("La Pila esta vcia)
+        return self.datos.primero.dato
+
+    def esta_vacia(self):
+        return self.datos.esta_vacia()
+class HistorialReproduccion: 
+    def __init__(self):
+        self.historial = Pila()
+    def registrar(self, cancion):
+        self.historial.apilar(cancion)
+    def anterior(self):
+        return self.historial.desapilar()
+    def ultima(self):
+        return self.historial.ver_tope()
+
+#porque funcionan el principio lifo es decir el ultimo elemnto que entra es el primero que sale.
+        
 ---
 
 ## Ejercicio 6 — Cola de reproducción (10 pts)
