@@ -1,0 +1,402 @@
+**respuesta 3**: #class ItemMedida:
+    nombre: str
+    cantidad: float
+    unidad: str
+
+    def:_tupla(self, receta_id: str) -> tuple[str, str, float, str]:
+        return (receta_id, self.nombre, self.cantidad, self.unidad)
+#dataclass
+class Receta:
+    receta_id: str
+    nombre: str
+    tiempo_coccion_minutos: int
+    items_propios: list[ItemMedida] = field(default_factory=list)
+    subrecetas_ids: list[str] = field(default_factory=list)
+
+class LibroRecetas:
+    def:__init__(self) -> None:
+        self._recetas: dict[str, Receta] = {}
+
+    def: agregar_receta(self, receta: Receta) -> None:
+        clave = receta.receta_id.strip().lower()
+        self._recetas[clave] = receta
+
+    def: obtener_receta(self, receta_id: str) -> Receta:
+        clave = receta_id.strip().lower()
+        if clave not in self._recetas:
+            raise RecetaNoEncontrada(receta_id)
+        return self._recetas[clave]
+
+def: ingredientes_totales(
+    receta_id: str,
+    libro: LibroRecetas,
+    subrecetas: dict[str, list[str]],
+    ingredientes: dict[str, list[ItemMedida]],-> list[tuple[str, str, float, str]]: (Devuelve una lista de tuplas (receta_id, nombre, cantidad, unidad).
+    Orden):
+      1. Primero los ítems propios de la receta principal (ingredientes, carne, aceite,
+         cocción, perejil, cebolla, morrón rojo, salsa picante, etc.).
+      2. Luego cada subreceta en orden (ej. salsa_criolla y sofrito), incluyendo sus
+         ingredientes, salsas, litros de agua, gramos de salsa, vegetales o carnes.
+    def:receta_principal = libro.obtener_receta(receta_id)
+    def: clave_principal = receta_principal.receta_id.strip().lower()
+  resultado: list[tuple[str, str, float, str]] = []
+
+    # 1. Ítems propios de la receta principal
+    items_principales = ingredientes.get(clave_principal, receta_principal.items_propios)
+    for item in items_principales:
+        resultado.append(item.a_tupla(receta_principal.receta_id))
+
+    # 2. Subrecetas asociadas en orden
+    ids_subrecetas = subrecetas.get(clave_principal, receta_principal.subrecetas_ids)
+    for sub_id in ids_subrecetas:
+        sub_receta = libro.obtener_receta(sub_id)
+        clave_sub = sub_receta.receta_id.strip().lower()
+        items_sub = ingredientes.get(clave_sub, sub_receta.items_propios)
+
+        for item in items_sub:
+            resultado.append(item.a_tupla(sub_receta.receta_id))
+
+        # Si una subreceta tuviera subrecetas anidadas, las recorre en orden
+        for sub_anidada_id in subrecetas.get(clave_sub, sub_receta.subrecetas_ids):
+            sub_anidada = libro.obtener_receta(sub_anidada_id)
+            clave_anidada = sub_anidada.receta_id.strip().lower()
+            for item in ingredientes.get(clave_anidada, sub_anidada.items_propios):
+                resultado.append(item.a_tupla(sub_anidada.receta_id))
+            return resultado
+
+
+def: construir_datos_ejemplo() -> tuple[LibroRecetas, dict[str, list[str]], dict[str, list[ItemMedida]]]:
+    libro = LibroRecetas()
+    #Receta principal: Chimichurri
+    chimichurri = Receta(
+        receta_id="chimichurri",
+        nombre="Chimichurri",
+        tiempo_coccion_minutos=15,
+        subrecetas_ids=["salsa_criolla", "sofrito"],)
+    # Subrecetas: Salsa criolla y Sofrito
+    salsa_criolla = Receta(
+        receta_id="salsa_criolla",
+        nombre="Salsa criolla",
+        tiemptiempo_coccion_minu20,)
+  #sofrito = Receta(receta_id="sofrito",
+        nombre="Sofrito",
+        tiempo_coccion_minutos=25,)
+
+    def:libro.agregar_receta(chimichurri)
+    def:libro.agregar_receta(salsa_criolla)
+    def:libro.agregar_receta(sofrito)
+
+    #subrecetas: dict[str, list[str]] = {"chimichurri": ["salsa_criolla", "sofrito"],}
+        "salsa_criolla": [],
+        "sofrito": [],
+
+    ingredientes: dict[str, list[ItemMedida]] = {
+        "chimichurri":
+            ItemMedida("Carne (bife de chorizo)", 500.0, "g"),
+            ItemMedida("Aceite", 150.0, "g"),
+            ItemMedida("Cocción para Chimichurri", 15.0, "min"),
+            ItemMedida("Perejil", 120.0, "g"),
+            ItemMedida("Cebolla", 90.0, "g"),
+            ItemMedida("Morrón rojo", 80.0, "g"),
+            ItemMedida("Salsa picante", 25.0, "g")
+      
+        "salsa_criolla":
+            ItemMedida("Cebolla morada (vegetal)", 150.0, "g"),
+            ItemMedida("Morrón rojo (vegetal)", 80.0, "g"),
+            ItemMedida("Carne (vacío)", 450.0, "g"),
+            ItemMedida("Salsa base para macerar", 60.0, "g"),
+            ItemMedida("Salsa de vinagre condimentada", 1, "unidad"),
+            ItemMedida("Agua para cocción/lavado", 0.5, "L"),
+            ItemMedida("Cocción para Salsa criolla", 20.0, "min")
+      
+        "sofrito":
+            ItemMedida("Cebolla blanca (vegetal)", 180.0, "g"),
+            ItemMedida("Tomate triturado (vegetal)", 200.0, "g"),
+            ItemMedida("Carne molida", 300.0, "g"),
+            ItemMedida("Salsa de tomate reducida", 120.0, "g"),
+            ItemMedida("Salsa de ajo y pimentón", 1, "unidad"),
+            ItemMedida("Agua de cocción", 0.75, "L"),
+            ItemMedida("Cocción para Sofrito", 25.0, "min")
+       return libro, subrecetas, ingredientes
+  if: __name__ == "__main__": libro_recetas, mapa_subrecetas, mapa_ingredientes = construir_datos_ejemplo() 
+      tuplas = ingredientes_totales (receta_id="chimichurri",libro= libro_recetas,subrecetas=mapa_subrecetas,ingredientes=mapa_ingredientes,)
+print("Resultado en lista de tuplas (receta_id, nombre, cantidad, unidad):")
+    for registro in tuplas:
+        print(registro)
+
+**respuesta 4**:
+#class EntradaMenu:
+    nombre: str
+    precio_usd: float
+ def:__str__(self) -> str:
+        return f"{self.nombre} (${self.precio_usd:.2f} USD)"
+      class Nodo:
+    def:__init__(self, dia: str, receta: EntradaMenu, siguiente: "Nodo | None" = None) -> None:
+        self.dia = dia
+        self.receta = receta
+        self.siguiente = siguiente
+class IteradorListaEnlazada:
+    def:__init__(self, cabeza: Nodo | None) -> None:
+        self._actual = cabeza
+
+    def:__iter__(self) -> "IteradorListaEnlazada":
+        return self
+
+    def:__next__(self) -> tuple[str, EntradaMenu]:
+        if: self._actual is None:
+            raise StopIteration
+        par = (self._actual.dia, self._actual.receta)
+        self._actual = self._actual.siguiente
+        return par
+#class ListaEnlazada:
+    def:__init__(self) -> None:
+        self.cabeza: Nodo | None = None
+        self.cola: Nodo | None = None
+        self._tamanio: int = 0
+
+    def:agregar_al_final(self, dia: str, receta: EntradaMenu) -> None:
+        nuevo_nodo = Nodo(dia=dia, receta=receta)
+        if: self.cabeza is None:
+            self.cabeza = nuevo_nodo
+            self.cola = nuevo_nodo
+        else:
+            assert self.cola is not None
+            self.cola.siguiente = nuevo_nodo
+            self.cola = nuevo_nodo
+        self._tamanio += 1
+
+    def:quitar_por_dia(self, dia: str) -> bool:
+        clave = dia.strip().lower()
+        actual = self.cabeza
+        anterior: Nodo | None = None
+
+        while: actual is not None:
+            if: actual.dia.strip().lower() == clave:
+                if: anterior is None:
+                    self.cabeza = actual.siguiente
+                else:
+                    anterior.siguiente = actual.siguiente
+                if: actual is self.cola:
+                    self.cola = anterior
+                self._tamanio -= 1
+                return True
+            anterior = actual
+            actual = actual.siguiente
+        return False
+
+    def:contiene_dia(self, dia: str) -> bool:
+        clave = dia.strip().lower()
+        actual = self.cabeza
+        while: actual is not None:
+            if: actual.dia.strip().lower() == clave:
+                return True
+            actual = actual.siguiente
+        return False
+    def:__iter__(self) -> IteradorListaEnlazada:
+        return IteradorListaEnlazada(self.cabeza)
+    def:__len__(self) -> int:
+        return self._tamanio
+
+
+#class MenuSemanal:
+    def:__init__(self) -> None:
+        self._lista = ListaEnlazada()
+    def:agregar(self, dia: str, receta: EntradaMenu, reemplazar_si_existe: bool = True) -> None:
+        if: self._lista.contiene_dia(dia):
+            if: reemplazar_si_existe:
+                self.quitar(dia)
+            else: raise ValueError(f"El día '{dia}' ya está ocupado en el menú semanal.")
+        self._lista.agregar_al_final(dia=dia, receta=receta)
+
+    def: quitar(self, dia: str) -> bool:
+        return self._lista.quitar_por_dia(dia)
+    def: total_usd(self) -> float: return sum(receta.precio_usd for _, receta in self)
+    def:__iter__(self) -> IteradorListaEnlazada:
+        return iter(self._lista)
+    def:__len__(self) -> int:
+        return len(self._lista)
+
+
+if: __name__ == "__main__":
+    menu = MenuSemanal()
+
+    #Supongamos que Lunes estaba ocupado por otro menú
+    menu.agregar("Lunes", EntradaMenu("Menú provisorio", 1000.0))
+    print("Antes de actualizar Lunes:")
+    for: dia, receta in menu:
+        print(f"  {dia}: {receta}")
+
+    #Si Lunes ya está ocupado, quitamos el anterior y cargamos el definitivo
+    if: menu._lista.contiene_dia("Lunes"):
+        menu.quitar("Lunes")
+    menu.agregar("Lunes", EntradaMenu("Chimichurri", 2700.0))
+    menu.agregar("Martes", EntradaMenu("Sofrito", 1700.0))
+    menu.agregar("Jueves", EntradaMenu("Salsa criolla", 3840.0))
+
+    print:("\nMenú semanal final (en orden de inserción):")
+    for: dia, receta in menu:
+        print:(f"  {dia}: {receta}")
+    print:(f"\nTotal semanal en USD: ${menu.total_usd():.2f}")
+
+#class PilaVaciaError(Exception):"Se lanza al intentar desapilar o ver el tope de una Pila vacía."
+  def:__init__(self, mensaje: str = "La pila está vacía.") -> None super().__init__(mensaje)
+#class Nodo:def __init__(self, dato: Any, siguiente: "Nodo | None" = None) -> None: self.dato = dato
+        self.siguiente = siguiente
+                                              
+#class ListaEnlazada:"Lista enlazada simple usada como estructura interna de la Pila."
+   def:__init__(self) -> None: self.cabeza: Nodo | None = None
+        self._tamanio: int = 0
+
+    def:insertar_al_frente(self, dato: Any) -> None:
+        nuevo_nodo = Nodo(dato=dato, siguiente=self.cabeza)
+        self.cabeza = nuevo_nodo
+        self._tamanio += 1
+
+    def: quitar_del_frente(self) -> Any:
+        if: self.cabeza is None:
+            raise PilaVaciaError("No se puede desapilar: la pila está vacía.")
+        dato_extraido = self.cabeza.dato
+        self.cabeza = self.cabeza.siguiente
+        self._tamanio -= 1
+        return dato_extraido
+
+    def: ver_frente(self) -> Any:
+        if: self.cabeza is None:
+            raise PilaVaciaError("No se puede ver el tope: la pila está vacía.")
+        return self.cabeza.dato
+
+    def: esta_vacia(self) -> bool:
+        return self.cabeza is None
+
+    def: __len__(self) -> int:
+        return self._tamanio
+
+
+#class Pila:"Estructura LIFO (último en entrar, primero en salir) apoyada en ListaEnlazada."
+    def:__init__(self) -> None:
+        self._elementos = ListaEnlazada()
+    def: apilar(self, dato: Any) -> None:
+        self._elementos.insertar_al_frente(dato)
+    def: desapilar(self) -> Any:
+        return self:_elementos.quitar_del_frente()
+
+    def: ver_tope(self) -> Any:
+        return self:_elementos.ver_frente()
+
+    def: esta_vacia(self) -> bool:
+        return self:_elementos.esta_vacia()
+
+    def:__len__(self) -> int:
+        return: len(self._elementos)
+
+**respuesta 5**: #class RegistroCocinado:
+    nombre: str
+    tipo: str  # "Plato principal" o "Subreceta"
+    ingredientes_gramos: dict[str, float] = field(default_factory=dict)
+    agua_lavar_carne_litros: float = 0.0
+    agua_lavar_vegetales_litros: float = 0.0
+
+    def:__str__(self) -> str:
+        lineas = [f"[{self.tipo}] {self.nombre}"
+            f"  Agua para lavar carne: {self.agua_lavar_carne_litros} L",
+            f"  Agua para lavar vegetales: {self.agua_lavar_vegetales_litros} L",
+            "  Ingredientes (g):"]
+        for: nombre_ing, gramos in self.ingredientes_gramos.items():
+            lineas.append(f"{nombre_ing}: {gramos} g")
+        return: "\n".join(lineas)
+
+
+#class HistorialCocinado:
+    def:__init__(self) -> None:
+        self._pila = Pila()
+
+    def: cocinar(self, receta: RegistroCocinado) -> None:"Registra una receta cocinada en el tope de la pila"
+        self:_pila.apilar(receta)
+
+    def: deshacer_ultimo_cocinado(self) -> RegistroCocinado:"Quita y devuelve el último registro cocinado (lanza PilaVaciaError si está vacía)."
+       return: self._pila.desapilar()                                       
+
+    def: ver_ultimo_cocinado(self) -> RegistroCocinado:"Consulta el último registro cocinado sin quitarlo (lanza PilaVaciaError si está vacía)."
+       return: self._pila.ver_tope()                                    
+
+    def: esta_vacio(self) -> bool:
+        return: self._pila.esta_vacia()
+
+    def: mostrar_historial_orden_cocinado(self) -> None:"Muestra los registros en el orden en que se fueron cocinando (sin perder la pila)."
+        auxiliar: = Pila()
+        orden_cocinado: list[RegistroCocinado] = []
+
+        while: not self._pila.esta_vacia():
+            item = self._pila.desapilar()
+            orden_cocinado.append(item)
+            auxiliar.apilar(item)
+
+        while: not auxiliar.esta_vacia():
+            self._pila.apilar(auxiliar.desapilar())
+
+        for: indice, registro in enumerate(reversed(orden_cocinado), start=1):
+            print(f"{indice}. {registro}\n")
+
+def: crear_registros_base() -> list[RegistroCocinado]:
+    # 1. Platillo principal: Chimichurri
+    chimichurri = RegistroCocinado(
+        nombre="Chimichurri",
+        tipo="Plato principal",
+        ingredientes_gramos:
+            "Perejil fresco picado": 120.0,
+            "Orégano seco": 20.0,
+            "Ajo triturado": 35.0,
+            "Ají molido": 10.0,
+            "Aceite vegetal": 150.0,
+            "Vinagre de vino": 60.0,
+            "Carne de acompañamiento": 500.0,
+        agua_lavar_carne_litros=0.5,
+        agua_lavar_vegetales_litros=0.75,
+      
+    # 2. Subreceta: Salsa criolla
+    salsa_criolla = RegistroCocinado
+        nombre="Salsa criolla"
+        tipo="Subreceta"
+        ingredientes_gramos:
+            "Cebolla morada": 150.0,
+            "Morrón rojo": 80.0,
+            "Morrón verde": 60.0,
+            "Aceite de girasol": 50.0,
+            "Vinagre de alcohol": 30.0,
+            "Sal fina": 5.0,
+            "Carne base": 450.0,
+        agua_lavar_carne_litros=0.4,
+        agua_lavar_vegetales_litros=0.8,
+
+    # 3. Subreceta: Sofrito
+    sofrito = RegistroCocinado
+        nombre="Sofrito",
+        tipo="Subreceta",
+        ingredientes_gramos=
+            "Cebolla blanca": 180.0,
+            "Tomate perita triturado": 200.0,
+            "Ajo picado": 25.0,
+            "Aceite de oliva": 45.0,
+            "Pimentón dulce": 10.0,
+            "Carne molida": 300.0,
+        agua_lavar_carne_litros=0.35,
+        agua_lavar_vegetales_litros=0.9,
+    return: [chimichurri, salsa_criolla, sofrito]
+      
+if:__name__ == "__main__":
+    historial = HistorialCocinado()
+
+    #Verificar PilaVaciaError al consultar o desapilar una pila vacía
+    try: historial.ver_ultimo_cocinado(): except PilaVaciaError as exc:
+        print:(f"Prueba de pila vacía (ver_tope): {exc}")
+
+    try: historial.deshacer_ultimo_cocinado()
+    except PilaVaciaError as exc:
+        print:(f"Prueba de pila vacía (desapilar): {exc}\n")
+
+    #Cocinar primero el platillo principal (Chimichurri) y luego subrecetas (Salsa criolla y Sofrito):
+    for:receta in crear_registros_base(): historial.cocinar(receta)
+    print:("==Historial de cocinado (orden de preparación)==")
+    historial: mostrar_historial_orden_cocinado():
+    print("Último registro en el tope de la pila:")
+    print(historial.ver_ultimo_cocinado())
