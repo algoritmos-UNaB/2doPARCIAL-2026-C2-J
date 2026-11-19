@@ -14,6 +14,9 @@ Definir `HistorialReproduccion`, que usa una `Pila` de canciones:
 - `ultima()` devuelve la última canción reproducida, sin sacarla.
 
 ```Python
+class PilaVaciaError(Exception):
+    pass
+
 class Pila:
     def __init__(self):
         self._lista = ListaEnlazada()
